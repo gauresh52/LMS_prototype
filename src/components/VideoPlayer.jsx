@@ -2,11 +2,13 @@ import { useRef, useState, useEffect } from "react";
 
 export default function VideoPlayer({ onEnd }) {
   const videoRef = useRef(null);
+  const lastTimeRef = useRef(0);
 
   const [playing, setPlaying] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [warning, setWarning] = useState("");
 
   // Reload safety
   useEffect(() => {
@@ -39,8 +41,9 @@ export default function VideoPlayer({ onEnd }) {
   const replayToggle = () => {
     if (!videoRef.current) return;
 
-    if (completed && videoRef.current.currentTime === duration) {
+    if (completed && videoRef.current.currentTime >= duration) {
       videoRef.current.currentTime = 0;
+      lastTimeRef.current = 0;
       videoRef.current.play();
       setPlaying(true);
       return;
@@ -49,9 +52,22 @@ export default function VideoPlayer({ onEnd }) {
     togglePlay();
   };
 
+  // 🚫 SKIP PREVENTION LOGIC
   const updateTime = () => {
     if (!videoRef.current) return;
-    setCurrentTime(videoRef.current.currentTime);
+
+    const current = videoRef.current.currentTime;
+
+    // Detect forward skip (more than ~1.5s jump)
+    if (current - lastTimeRef.current > 1.5) {
+      videoRef.current.currentTime = lastTimeRef.current;
+      setWarning("Skipping is disabled. Please watch the video completely.");
+      return;
+    }
+
+    lastTimeRef.current = current;
+    setCurrentTime(current);
+    setWarning("");
   };
 
   const loadMetadata = () => {
@@ -60,9 +76,12 @@ export default function VideoPlayer({ onEnd }) {
   };
 
   const handleEnded = () => {
-    localStorage.setItem("videoCompleted", "true");
-    setCompleted(true);
-    setPlaying(false);
+    // Ensure full watch before marking completed
+    if (Math.floor(currentTime) >= Math.floor(duration)) {
+      localStorage.setItem("videoCompleted", "true");
+      setCompleted(true);
+      setPlaying(false);
+    }
   };
 
   // Progress percentage
@@ -75,6 +94,11 @@ export default function VideoPlayer({ onEnd }) {
         ref={videoRef}
         src="https://www.w3schools.com/html/mov_bbb.mp4"
         className="w-full rounded"
+        playsInline
+        webkit-playsinline="true"
+        controls={false}
+        disablePictureInPicture
+        controlsList="nodownload noplaybackrate nofullscreen"
         onLoadedMetadata={loadMetadata}
         onTimeUpdate={updateTime}
         onEnded={handleEnded}
@@ -94,9 +118,15 @@ export default function VideoPlayer({ onEnd }) {
         </div>
       </div>
 
+      {/* Warning message */}
+      {warning && (
+        <p className="text-sm text-red-600 mt-2 text-center">
+          {warning}
+        </p>
+      )}
+
       {/* Controls */}
       <div className="flex justify-between items-center mt-4">
-        {/* Before completion */}
         {!completed && (
           <button
             onClick={togglePlay}
@@ -106,7 +136,6 @@ export default function VideoPlayer({ onEnd }) {
           </button>
         )}
 
-        {/* After completion → Replay becomes Play/Pause */}
         {completed && (
           <button
             onClick={replayToggle}

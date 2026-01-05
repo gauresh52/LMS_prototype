@@ -1,72 +1,217 @@
 import { useState } from "react";
 import { getQuestions, saveQuestions } from "../data/questions";
 
-export default function AdminPanel() {
+const MAX_QUESTIONS = 15;
+
+export default function AdminPanel({ onLogout }) {
   const [questions, setQuestions] = useState(getQuestions());
+  const [newQuestion, setNewQuestion] = useState({
+    q: "",
+    options: ["", "", ""],
+    answer: 0,
+  });
 
-  const updateQuestion = (id, value) => {
-    const updated = questions.map((q) =>
-      q.id === id ? { ...q, q: value } : q
+  // Update existing question text
+  const updateQuestionText = (id, value) => {
+    setQuestions((prev) =>
+      prev.map((q) => (q.id === id ? { ...q, q: value } : q))
     );
-    setQuestions(updated);
   };
 
+  // Update existing option
   const updateOption = (qId, index, value) => {
-    const updated = questions.map((q) => {
-      if (q.id === qId) {
-        const opts = [...q.options];
-        opts[index] = value;
-        return { ...q, options: opts };
-      }
-      return q;
-    });
-    setQuestions(updated);
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === qId
+          ? {
+              ...q,
+              options: q.options.map((opt, i) =>
+                i === index ? value : opt
+              ),
+            }
+          : q
+      )
+    );
   };
 
- 
-    const save = () => {
-      saveQuestions(questions);
+  // Update correct answer
+  const updateAnswer = (qId, value) => {
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === qId ? { ...q, answer: Number(value) } : q
+      )
+    );
+  };
 
-      // Invalidate previous student attempts
-      localStorage.removeItem("preQuestions");
-      localStorage.removeItem("postQuestions");
-      localStorage.removeItem("preScore");
-      localStorage.removeItem("postScore");
-      localStorage.removeItem("videoCompleted");
-      localStorage.removeItem("stage");
+  // Delete question
+  const deleteQuestion = (id) => {
+    if (!window.confirm("Delete this question?")) return;
+    setQuestions((prev) => prev.filter((q) => q.id !== id));
+  };
 
-      alert("Questions saved and student attempts reset.");
-    };
+  // Add new question
+  const addQuestion = () => {
+    if (questions.length >= MAX_QUESTIONS) return;
 
-   
+    if (
+      !newQuestion.q ||
+      newQuestion.options.some((o) => o.trim() === "")
+    ) {
+      alert("Please fill all fields for the new question.");
+      return;
+    }
+
+    const nextId =
+      Math.max(...questions.map((q) => q.id), 0) + 1;
+
+    setQuestions((prev) => [
+      ...prev,
+      { id: nextId, ...newQuestion },
+    ]);
+
+    setNewQuestion({
+      q: "",
+      options: ["", "", ""],
+      answer: 0,
+    });
+  };
+
+  // Save changes (DO NOT TOUCH student attempts)
+  const save = () => {
+    saveQuestions(questions);
+    localStorage.setItem("questionsVersion", Date.now().toString());
+    alert("Questions saved successfully.");
+  };
+
   return (
-    <div className="bg-white p-6 rounded shadow max-w-4xl mx-auto">
-      <h2 className="text-xl font-bold mb-4">Admin Question Editor</h2>
+    <div className="bg-white p-6 rounded shadow max-w-5xl mx-auto fade-in">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold">
+          Admin Question Manager ({questions.length}/{MAX_QUESTIONS})
+        </h2>
 
+        <div className="flex gap-3">
+          <button
+            onClick={save}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded"
+          >
+            Save Changes
+          </button>
+
+          <button
+            onClick={onLogout}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Existing Questions */}
       {questions.map((q) => (
-        <div key={q.id} className="border p-4 mb-4 rounded">
-          <input
-            value={q.q}
-            onChange={(e) => updateQuestion(q.id, e.target.value)}
-            className="w-full border p-2 mb-2 rounded"
-          />
-          {q.options.map((opt, i) => (
+        <div
+          key={q.id}
+          className="border rounded p-4 mb-4"
+        >
+          <div className="flex justify-between items-start mb-2">
             <input
-              key={i}
-              value={opt}
-              onChange={(e) => updateOption(q.id, i, e.target.value)}
-              className="w-full border p-2 mb-1 rounded"
+              value={q.q}
+              onChange={(e) =>
+                updateQuestionText(q.id, e.target.value)
+              }
+              className="w-full border rounded p-2 mr-4"
             />
+
+            <button
+              onClick={() => deleteQuestion(q.id)}
+              className="text-red-600 text-sm"
+            >
+              Delete
+            </button>
+          </div>
+
+          {q.options.map((opt, i) => (
+            <div key={i} className="flex items-center mb-1">
+              <input
+                type="radio"
+                checked={q.answer === i}
+                onChange={() => updateAnswer(q.id, i)}
+                className="mr-2"
+              />
+              <input
+                value={opt}
+                onChange={(e) =>
+                  updateOption(q.id, i, e.target.value)
+                }
+                className="w-full border rounded p-1"
+              />
+            </div>
           ))}
         </div>
       ))}
 
-      <button
-        onClick={save}
-        className="bg-blue-700 text-white px-4 py-2 rounded"
-      >
-        Save Changes
-      </button>
+      {/* Add New Question */}
+      <div className="border-t pt-6 mt-6">
+        <h3 className="font-semibold mb-3">
+          Add New Question
+        </h3>
+
+        <input
+          placeholder="Question text"
+          value={newQuestion.q}
+          onChange={(e) =>
+            setNewQuestion({ ...newQuestion, q: e.target.value })
+          }
+          className="w-full border rounded p-2 mb-3"
+          disabled={questions.length >= MAX_QUESTIONS}
+        />
+
+        {newQuestion.options.map((opt, i) => (
+          <div key={i} className="flex items-center mb-2">
+            <input
+              type="radio"
+              checked={newQuestion.answer === i}
+              onChange={() =>
+                setNewQuestion({ ...newQuestion, answer: i })
+              }
+              className="mr-2"
+              disabled={questions.length >= MAX_QUESTIONS}
+            />
+            <input
+              placeholder={`Option ${i + 1}`}
+              value={opt}
+              onChange={(e) => {
+                const opts = [...newQuestion.options];
+                opts[i] = e.target.value;
+                setNewQuestion({ ...newQuestion, options: opts });
+              }}
+              className="w-full border rounded p-1"
+              disabled={questions.length >= MAX_QUESTIONS}
+            />
+          </div>
+        ))}
+
+        <button
+          onClick={addQuestion}
+          disabled={questions.length >= MAX_QUESTIONS}
+          className={`mt-3 px-4 py-1.5 rounded text-white
+            ${
+              questions.length >= MAX_QUESTIONS
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700"
+            }
+          `}
+        >
+          Add Question
+        </button>
+
+        {questions.length >= MAX_QUESTIONS && (
+          <p className="text-sm text-red-600 mt-2">
+            Maximum of 15 questions reached.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

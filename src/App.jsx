@@ -26,24 +26,14 @@ export default function App() {
   }, []);
 
   // ADMIN DASHBOARD
-  if (isAdmin) {
-    return (
-      <div className="p-6 max-w-5xl mx-auto fade-in">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-xl font-semibold">Admin Dashboard</h1>
+if (isAdmin) {
+  return (
+    <div className="p-6 max-w-5xl mx-auto fade-in">
+      <AdminPanel onLogout={() => setIsAdmin(false)} />
+    </div>
+  );
+}
 
-          <button
-            onClick={() => setIsAdmin(false)}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded transition"
-          >
-            Logout
-          </button>
-        </div>
-
-        <AdminPanel />
-      </div>
-    );
-  }
 
   // ADMIN LOGIN SCREEN
   if (showAdminLogin) {

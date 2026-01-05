@@ -13,7 +13,7 @@ export default function AdminPanel({ onLogout }) {
     answer: 0,
   });
 
-  /* ---------------- CRUD LOGIC ---------------- */
+  /* CRUD Logiv  */
 
   const updateQuestionText = (id, value) => {
     setQuestions((prev) =>
@@ -70,7 +70,7 @@ export default function AdminPanel({ onLogout }) {
     alert("Questions saved successfully.");
   };
 
-  /* ---------------- ADMIN VIEW ---------------- */
+  /* ADMIN View  */
 
   return (
     <div className="card p-6 fade-in">

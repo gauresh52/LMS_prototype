@@ -13,7 +13,7 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
 
-  // 🔒 Safe reload handling
+  // Safe reload handling
   useEffect(() => {
     const savedStage = localStorage.getItem("stage");
     const validStages = ["pre", "video", "post", "score"];
@@ -26,14 +26,14 @@ export default function App() {
     }
   }, []);
 
-  // 🔐 HARD GUARD: close admin login if assessment starts
+  //  HARD GUARD: close admin login if assessment starts
   useEffect(() => {
     if (stage !== "pre" && showAdminLogin) {
       setShowAdminLogin(false);
     }
   }, [stage, showAdminLogin]);
 
-  /* ================= ADMIN DASHBOARD ================= */
+  /*  ADMIN dashboard  */
   if (isAdmin) {
     return (
       <div className="min-h-screen flex justify-center px-4 py-8">
@@ -44,7 +44,7 @@ export default function App() {
     );
   }
 
-  /* ================= ADMIN LOGIN ================= */
+  /*  ADMIN Login  */
   if (showAdminLogin) {
     return (
       <div className="min-h-screen flex justify-center items-start px-4 py-8">
@@ -61,7 +61,7 @@ export default function App() {
     );
   }
 
-  /* ================= USER VIEW ================= */
+  /*  USER ViEw  */
   return (
     <div className="min-h-screen flex justify-center px-4 py-8 ">
       <div className="w-full max-w-5xl fade-in">

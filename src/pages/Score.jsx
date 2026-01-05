@@ -1,6 +1,10 @@
+import { useState } from "react";
+
 export default function Score({ setStage }) {
   const pre = localStorage.getItem("preScore");
   const post = localStorage.getItem("postScore");
+
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const restartAssessment = () => {
     // Clear assessment-related data
@@ -18,7 +22,6 @@ export default function Score({ setStage }) {
   return (
     <div className="max-w-md mx-auto fade-in">
       <div className="card p-6 text-center">
-        {/* Header */}
         <h2 className="text-2xl font-semibold text-gray-800 mb-2">
           Assessment Completed
         </h2>
@@ -38,14 +41,45 @@ export default function Score({ setStage }) {
           </p>
         </div>
 
-        {/* Action */}
+        {/* Restart Button */}
         <button
-          onClick={restartAssessment}
+          onClick={() => setShowConfirm(true)}
           className="btn-primary"
         >
           Restart Assessment
         </button>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirm && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="card p-6 max-w-sm w-full text-center">
+            <h3 className="text-lg font-semibold mb-2">
+              Restart Assessment?
+            </h3>
+
+            <p className="text-sm text-gray-600 mb-6">
+              This will clear your current scores and restart the assessment from the beginning.
+            </p>
+
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="btn-secondary"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={restartAssessment}
+                className="btn-danger"
+              >
+                Restart
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

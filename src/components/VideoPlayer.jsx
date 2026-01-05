@@ -54,13 +54,13 @@ export default function VideoPlayer({ onEnd }) {
     togglePlay();
   };
 
-  // Skip prevention + iOS-safe completion detection
+  // 🚫 Skip prevention (works even in fullscreen)
   const updateTime = () => {
     if (!videoRef.current) return;
 
     const current = videoRef.current.currentTime;
 
-    // Detect skip attempt
+    // Detect forward seek
     if (current - lastTimeRef.current > 1.5) {
       videoRef.current.currentTime = lastTimeRef.current;
       setWarning("Skipping is disabled. Please watch the video completely.");
@@ -89,7 +89,6 @@ export default function VideoPlayer({ onEnd }) {
     setDuration(videoRef.current.duration);
   };
 
-  // Desktop fallback
   const handleEnded = () => {
     if (!completedRef.current) {
       completedRef.current = true;
@@ -99,26 +98,46 @@ export default function VideoPlayer({ onEnd }) {
     }
   };
 
+  // 🔳 Fullscreen handler (cross-browser)
+  const enterFullscreen = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (video.requestFullscreen) {
+      video.requestFullscreen();
+    } else if (video.webkitEnterFullscreen) {
+      video.webkitEnterFullscreen(); // iOS Safari
+    }
+  };
+
   const progressPercent =
     duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
     <div className="bg-white p-4 rounded shadow fade-in max-w-3xl mx-auto">
-      <video
-        ref={videoRef}
-        src="https://www.w3schools.com/html/mov_bbb.mp4"
-        className="w-full rounded"
-        playsInline
-        webkit-playsinline="true"
-        controls={false}
-        disablePictureInPicture
-        controlsList="nodownload noplaybackrate nofullscreen"
-        onLoadedMetadata={loadMetadata}
-        onTimeUpdate={updateTime}
-        onEnded={handleEnded}
-      />
+      <div className="relative">
+        <video
+          ref={videoRef}
+          src="https://www.w3schools.com/html/mov_bbb.mp4"
+          className="w-full rounded"
+          playsInline
+          controls={false}
+          onLoadedMetadata={loadMetadata}
+          onTimeUpdate={updateTime}
+          onEnded={handleEnded}
+        />
 
-      {/* Timeline / Progress Bar */}
+        {/* Fullscreen icon */}
+        <button
+          onClick={enterFullscreen}
+          className="absolute bottom-3 right-3 bg-black bg-opacity-60 text-white p-2 rounded hover:bg-opacity-80 transition"
+          title="Fullscreen"
+        >
+          ⛶
+        </button>
+      </div>
+
+      {/* Timeline */}
       <div className="mt-3">
         <div className="w-full h-2 bg-gray-300 rounded overflow-hidden">
           <div

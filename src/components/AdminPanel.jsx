@@ -13,7 +13,7 @@ export default function AdminPanel({ onLogout }) {
     answer: 0,
   });
 
-  /*  CRUD LOGIC  */
+  /* ---------------- CRUD LOGIC ---------------- */
 
   const updateQuestionText = (id, value) => {
     setQuestions((prev) =>
@@ -81,27 +81,27 @@ export default function AdminPanel({ onLogout }) {
     alert("Questions saved successfully.");
   };
 
-  /*  ADMIN VIEW  */
+  /* ---------------- ADMIN VIEW ---------------- */
 
   return (
-    <div className="bg-white p-6 rounded shadow max-w-5xl mx-auto fade-in">
+    <div className="card p-6 fade-in">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold">
-          Admin Question Manager ({questions.length}/{MAX_QUESTIONS})
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl font-semibold text-gray-800">
+          Admin Question Manager
+          <span className="text-sm text-gray-500 ml-2">
+            ({questions.length}/{MAX_QUESTIONS})
+          </span>
         </h2>
 
         <div className="flex gap-3">
-          <button
-            onClick={save}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded"
-          >
+          <button onClick={save} className="btn-primary">
             Save Changes
           </button>
 
           <button
             onClick={() => setShowLogoutConfirm(true)}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded"
+            className="btn-danger"
           >
             Logout
           </button>
@@ -109,48 +109,54 @@ export default function AdminPanel({ onLogout }) {
       </div>
 
       {/* Existing Questions */}
-      {questions.map((q) => (
-        <div key={q.id} className="border rounded p-4 mb-4">
-          <div className="flex justify-between items-start mb-2">
-            <input
-              value={q.q}
-              onChange={(e) =>
-                updateQuestionText(q.id, e.target.value)
-              }
-              className="w-full border rounded p-2 mr-4"
-            />
-
-            <button
-              onClick={() => deleteQuestion(q.id)}
-              className="text-red-600 text-sm"
-            >
-              Delete
-            </button>
-          </div>
-
-          {q.options.map((opt, i) => (
-            <div key={i} className="flex items-center mb-1">
+      <div className="space-y-4">
+        {questions.map((q) => (
+          <div key={q.id} className="card p-4">
+            <div className="flex justify-between items-start mb-3">
               <input
-                type="radio"
-                checked={q.answer === i}
-                onChange={() => updateAnswer(q.id, i)}
-                className="mr-2"
-              />
-              <input
-                value={opt}
+                value={q.q}
                 onChange={(e) =>
-                  updateOption(q.id, i, e.target.value)
+                  updateQuestionText(q.id, e.target.value)
                 }
-                className="w-full border rounded p-1"
+                className="input mr-4"
               />
+
+              <button
+                onClick={() => deleteQuestion(q.id)}
+                className="text-sm text-red-600 hover:underline"
+              >
+                Delete
+              </button>
             </div>
-          ))}
-        </div>
-      ))}
+
+            <div className="space-y-2">
+              {q.options.map((opt, i) => (
+                <label
+                  key={i}
+                  className="flex items-center gap-2"
+                >
+                  <input
+                    type="radio"
+                    checked={q.answer === i}
+                    onChange={() => updateAnswer(q.id, i)}
+                  />
+                  <input
+                    value={opt}
+                    onChange={(e) =>
+                      updateOption(q.id, i, e.target.value)
+                    }
+                    className="input"
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* Add New Question */}
-      <div className="border-t pt-6 mt-6">
-        <h3 className="font-semibold mb-3">
+      <div className="border-t mt-10 pt-6">
+        <h3 className="text-lg font-semibold mb-4">
           Add New Question
         </h3>
 
@@ -160,45 +166,52 @@ export default function AdminPanel({ onLogout }) {
           onChange={(e) =>
             setNewQuestion({ ...newQuestion, q: e.target.value })
           }
-          className="w-full border rounded p-2 mb-3"
+          className="input mb-4"
           disabled={questions.length >= MAX_QUESTIONS}
         />
 
-        {newQuestion.options.map((opt, i) => (
-          <div key={i} className="flex items-center mb-2">
-            <input
-              type="radio"
-              checked={newQuestion.answer === i}
-              onChange={() =>
-                setNewQuestion({ ...newQuestion, answer: i })
-              }
-              className="mr-2"
-              disabled={questions.length >= MAX_QUESTIONS}
-            />
-            <input
-              placeholder={`Option ${i + 1}`}
-              value={opt}
-              onChange={(e) => {
-                const opts = [...newQuestion.options];
-                opts[i] = e.target.value;
-                setNewQuestion({
-                  ...newQuestion,
-                  options: opts,
-                });
-              }}
-              className="w-full border rounded p-1"
-              disabled={questions.length >= MAX_QUESTIONS}
-            />
-          </div>
-        ))}
+        <div className="space-y-3">
+          {newQuestion.options.map((opt, i) => (
+            <label
+              key={i}
+              className="flex items-center gap-2"
+            >
+              <input
+                type="radio"
+                checked={newQuestion.answer === i}
+                onChange={() =>
+                  setNewQuestion({
+                    ...newQuestion,
+                    answer: i,
+                  })
+                }
+                disabled={questions.length >= MAX_QUESTIONS}
+              />
+              <input
+                placeholder={`Option ${i + 1}`}
+                value={opt}
+                onChange={(e) => {
+                  const opts = [...newQuestion.options];
+                  opts[i] = e.target.value;
+                  setNewQuestion({
+                    ...newQuestion,
+                    options: opts,
+                  });
+                }}
+                className="input"
+                disabled={questions.length >= MAX_QUESTIONS}
+              />
+            </label>
+          ))}
+        </div>
 
         <button
           onClick={addQuestion}
           disabled={questions.length >= MAX_QUESTIONS}
-          className={`mt-3 px-4 py-1.5 rounded text-white ${
+          className={`mt-5 ${
             questions.length >= MAX_QUESTIONS
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-green-600 hover:bg-green-700"
+              ? "btn-secondary cursor-not-allowed"
+              : "btn-primary"
           }`}
         >
           Add Question
@@ -213,27 +226,27 @@ export default function AdminPanel({ onLogout }) {
 
       {/* Logout Confirmation Modal */}
       {showLogoutConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow max-w-sm w-full">
-            <h3 className="text-lg font-semibold mb-3">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="card p-6 w-full max-w-sm">
+            <h3 className="text-lg font-semibold mb-2">
               Confirm Logout
             </h3>
 
-            <p className="text-sm mb-5">
+            <p className="text-sm text-gray-600 mb-5">
               Are you sure you want to logout from admin panel?
             </p>
 
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="px-4 py-1.5 border rounded"
+                className="btn-secondary"
               >
                 Cancel
               </button>
 
               <button
                 onClick={onLogout}
-                className="px-4 py-1.5 bg-red-600 text-white rounded"
+                className="btn-danger"
               >
                 Logout
               </button>

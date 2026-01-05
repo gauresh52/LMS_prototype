@@ -9,19 +9,49 @@ export default function ProgressBar({ currentStage }) {
   }[currentStage];
 
   return (
-    <div className="flex justify-between items-center mb-8">
-      {steps.map((step, index) => (
-        <div key={step} className="flex-1 text-center">
-          <div
-            className={`mx-auto w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold
-              ${index <= stageIndex ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-600"}
-            `}
-          >
-            {index + 1}
+    <div className="mb-10">
+      <div className="flex items-center justify-between">
+        {steps.map((step, index) => (
+          <div key={step} className="flex-1 flex flex-col items-center">
+            {/* Circle */}
+            <div
+              className={`w-9 h-9 flex items-center justify-center rounded-full text-sm font-semibold
+                ${
+                  index <= stageIndex
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-300 text-gray-600"
+                }
+              `}
+            >
+              {index + 1}
+            </div>
+
+            {/* Label */}
+            <p
+              className={`mt-2 text-xs font-medium
+                ${
+                  index <= stageIndex
+                    ? "text-blue-600"
+                    : "text-gray-500"
+                }
+              `}
+            >
+              {step}
+            </p>
           </div>
-          <p className="text-sm mt-2">{step}</p>
-        </div>
-      ))}
+        ))}
+      </div>
+
+      {/* Connector line */}
+      <div className="relative mt-4">
+        <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-gray-300" />
+        <div
+          className="absolute top-1/2 left-0 h-[2px] bg-blue-600 transition-all"
+          style={{
+            width: `${(stageIndex / (steps.length - 1)) * 100}%`,
+          }}
+        />
+      </div>
     </div>
   );
 }

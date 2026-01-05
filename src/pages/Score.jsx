@@ -16,18 +16,36 @@ export default function Score({ setStage }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded shadow max-w-md mx-auto fade-in text-center">
-      <h2 className="text-xl font-bold mb-4">Assessment Completed</h2>
+    <div className="max-w-md mx-auto fade-in">
+      <div className="card p-6 text-center">
+        {/* Header */}
+        <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+          Assessment Completed
+        </h2>
+        <p className="text-sm text-gray-600 mb-6">
+          You have successfully completed the learning module.
+        </p>
 
-      <p className="mb-2">Pre-Test Score: {pre}/3</p>
-      <p className="mb-6">Post-Test Score: {post}/3</p>
+        {/* Scores */}
+        <div className="space-y-2 mb-8">
+          <p className="text-gray-700">
+            <span className="font-medium">Pre-Test Score:</span>{" "}
+            {pre} / 3
+          </p>
+          <p className="text-gray-700">
+            <span className="font-medium">Post-Test Score:</span>{" "}
+            {post} / 3
+          </p>
+        </div>
 
-      <button
-        onClick={restartAssessment}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded transition"
-      >
-        Restart Assessment
-      </button>
+        {/* Action */}
+        <button
+          onClick={restartAssessment}
+          className="btn-primary"
+        >
+          Restart Assessment
+        </button>
+      </div>
     </div>
   );
 }

@@ -19,9 +19,21 @@ export default function PreTest({ setStage }) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto fade-in slide-up">
-      <h1 className="text-2xl font-bold mb-4">Pre-Test</h1>
-      <Quiz questions={selected} onSubmit={submit} />
+    <div className="max-w-3xl mx-auto fade-in">
+      <div className="card p-6">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-semibold text-gray-800">
+            Pre-Test Assessment
+          </h1>
+          <p className="text-sm text-gray-600 mt-1">
+            Please answer the following questions before proceeding to the video.
+          </p>
+        </div>
+
+        {/* Quiz */}
+        <Quiz questions={selected} onSubmit={submit} />
+      </div>
     </div>
   );
 }

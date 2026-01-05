@@ -7,7 +7,9 @@ export default function Quiz({ questions, onSubmit }) {
     setAnswers({ ...answers, [qId]: index });
   };
 
-  const allAnswered = questions.every((q) => answers[q.id] !== undefined);
+  const allAnswered = questions.every(
+    (q) => answers[q.id] !== undefined
+  );
 
   const submitQuiz = () => {
     let score = 0;
@@ -19,32 +21,43 @@ export default function Quiz({ questions, onSubmit }) {
 
   return (
     <div className="space-y-6">
-      {questions.map((q) => (
-        <div key={q.id} className="bg-white p-4 rounded shadow">
-          <h3 className="font-semibold mb-2">{q.q}</h3>
-          {q.options.map((opt, i) => (
-            <label key={i} className="block">
-              <input
-                type="radio"
-                name={q.id}
-                onChange={() => handleChange(q.id, i)}
-              />{" "}
-              {opt}
-            </label>
-          ))}
+      {questions.map((q, idx) => (
+        <div key={q.id} className="card p-5">
+          <h3 className="font-medium text-gray-800 mb-3">
+            {idx + 1}. {q.q}
+          </h3>
+
+          <div className="space-y-2">
+            {q.options.map((opt, i) => (
+              <label
+                key={i}
+                className="flex items-center gap-3 text-gray-700 cursor-pointer"
+              >
+                <input
+                  type="radio"
+                  name={q.id}
+                  onChange={() => handleChange(q.id, i)}
+                />
+                <span>{opt}</span>
+              </label>
+            ))}
+          </div>
         </div>
       ))}
-      <button
-        onClick={submitQuiz}
-        disabled={!allAnswered}
-        className={`px-4 py-2 rounded text-white
-                    ${
-                      allAnswered ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"
-                    }
-  `              }
-      >
-        Submit
-      </button>
+
+      <div className="pt-4">
+        <button
+          onClick={submitQuiz}
+          disabled={!allAnswered}
+          className={`${
+            allAnswered
+              ? "btn-primary"
+              : "btn-secondary cursor-not-allowed"
+          }`}
+        >
+          Submit Assessment
+        </button>
+      </div>
     </div>
   );
 }

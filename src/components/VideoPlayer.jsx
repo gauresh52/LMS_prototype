@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react";
 export default function VideoPlayer({ onEnd }) {
   const videoRef = useRef(null);
   const lastTimeRef = useRef(0);
+  const completedRef = useRef(false);
 
   const [playing, setPlaying] = useState(false);
   const [completed, setCompleted] = useState(false);
@@ -15,6 +16,7 @@ export default function VideoPlayer({ onEnd }) {
     const isCompleted = localStorage.getItem("videoCompleted") === "true";
     if (isCompleted) {
       setCompleted(true);
+      completedRef.current = true;
     }
   }, []);
 
@@ -52,13 +54,13 @@ export default function VideoPlayer({ onEnd }) {
     togglePlay();
   };
 
-  // 🚫 SKIP PREVENTION LOGIC
+  // Skip prevention + iOS-safe completion detection
   const updateTime = () => {
     if (!videoRef.current) return;
 
     const current = videoRef.current.currentTime;
 
-    // Detect forward skip (more than ~1.5s jump)
+    // Detect skip attempt
     if (current - lastTimeRef.current > 1.5) {
       videoRef.current.currentTime = lastTimeRef.current;
       setWarning("Skipping is disabled. Please watch the video completely.");
@@ -68,6 +70,18 @@ export default function VideoPlayer({ onEnd }) {
     lastTimeRef.current = current;
     setCurrentTime(current);
     setWarning("");
+
+    // iOS-safe completion detection
+    if (
+      duration > 0 &&
+      current >= duration - 0.3 &&
+      !completedRef.current
+    ) {
+      completedRef.current = true;
+      localStorage.setItem("videoCompleted", "true");
+      setCompleted(true);
+      setPlaying(false);
+    }
   };
 
   const loadMetadata = () => {
@@ -75,16 +89,16 @@ export default function VideoPlayer({ onEnd }) {
     setDuration(videoRef.current.duration);
   };
 
+  // Desktop fallback
   const handleEnded = () => {
-    // Ensure full watch before marking completed
-    if (Math.floor(currentTime) >= Math.floor(duration)) {
+    if (!completedRef.current) {
+      completedRef.current = true;
       localStorage.setItem("videoCompleted", "true");
       setCompleted(true);
       setPlaying(false);
     }
   };
 
-  // Progress percentage
   const progressPercent =
     duration > 0 ? (currentTime / duration) * 100 : 0;
 
@@ -118,7 +132,7 @@ export default function VideoPlayer({ onEnd }) {
         </div>
       </div>
 
-      {/* Warning message */}
+      {/* Warning */}
       {warning && (
         <p className="text-sm text-red-600 mt-2 text-center">
           {warning}
@@ -146,7 +160,7 @@ export default function VideoPlayer({ onEnd }) {
         )}
       </div>
 
-      {/* Proceed button */}
+      {/* Proceed */}
       {completed && (
         <div className="flex justify-center mt-5 fade-in">
           <button

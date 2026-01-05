@@ -27,9 +27,7 @@ export default function AdminPanel({ onLogout }) {
         q.id === qId
           ? {
               ...q,
-              options: q.options.map((opt, i) =>
-                i === index ? value : opt
-              ),
+              options: q.options.map((opt, i) => (i === index ? value : opt)),
             }
           : q
       )
@@ -38,9 +36,7 @@ export default function AdminPanel({ onLogout }) {
 
   const updateAnswer = (qId, index) => {
     setQuestions((prev) =>
-      prev.map((q) =>
-        q.id === qId ? { ...q, answer: index } : q
-      )
+      prev.map((q) => (q.id === qId ? { ...q, answer: index } : q))
     );
   };
 
@@ -52,21 +48,14 @@ export default function AdminPanel({ onLogout }) {
   const addQuestion = () => {
     if (questions.length >= MAX_QUESTIONS) return;
 
-    if (
-      !newQuestion.q ||
-      newQuestion.options.some((o) => o.trim() === "")
-    ) {
+    if (!newQuestion.q || newQuestion.options.some((o) => o.trim() === "")) {
       alert("Please fill all fields.");
       return;
     }
 
-    const nextId =
-      Math.max(...questions.map((q) => q.id), 0) + 1;
+    const nextId = Math.max(...questions.map((q) => q.id), 0) + 1;
 
-    setQuestions((prev) => [
-      ...prev,
-      { id: nextId, ...newQuestion },
-    ]);
+    setQuestions((prev) => [...prev, { id: nextId, ...newQuestion }]);
 
     setNewQuestion({
       q: "",
@@ -93,15 +82,14 @@ export default function AdminPanel({ onLogout }) {
             ({questions.length}/{MAX_QUESTIONS})
           </span>
         </h2>
-
-        <div className="flex gap-3">
-          <button onClick={save} className="btn-primary">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <button onClick={save} className="btn-primary w-full sm:w-auto">
             Save Changes
           </button>
 
           <button
             onClick={() => setShowLogoutConfirm(true)}
-            className="btn-danger"
+            className="btn-danger w-full sm:w-auto"
           >
             Logout
           </button>
@@ -115,9 +103,7 @@ export default function AdminPanel({ onLogout }) {
             <div className="flex justify-between items-start mb-3">
               <input
                 value={q.q}
-                onChange={(e) =>
-                  updateQuestionText(q.id, e.target.value)
-                }
+                onChange={(e) => updateQuestionText(q.id, e.target.value)}
                 className="input mr-4"
               />
 
@@ -131,10 +117,7 @@ export default function AdminPanel({ onLogout }) {
 
             <div className="space-y-2">
               {q.options.map((opt, i) => (
-                <label
-                  key={i}
-                  className="flex items-center gap-2"
-                >
+                <label key={i} className="flex items-center gap-2">
                   <input
                     type="radio"
                     checked={q.answer === i}
@@ -142,9 +125,7 @@ export default function AdminPanel({ onLogout }) {
                   />
                   <input
                     value={opt}
-                    onChange={(e) =>
-                      updateOption(q.id, i, e.target.value)
-                    }
+                    onChange={(e) => updateOption(q.id, i, e.target.value)}
                     className="input"
                   />
                 </label>
@@ -156,9 +137,7 @@ export default function AdminPanel({ onLogout }) {
 
       {/* Add New Question */}
       <div className="border-t mt-10 pt-6">
-        <h3 className="text-lg font-semibold mb-4">
-          Add New Question
-        </h3>
+        <h3 className="text-lg font-semibold mb-4">Add New Question</h3>
 
         <input
           placeholder="Question text"
@@ -172,10 +151,7 @@ export default function AdminPanel({ onLogout }) {
 
         <div className="space-y-3">
           {newQuestion.options.map((opt, i) => (
-            <label
-              key={i}
-              className="flex items-center gap-2"
-            >
+            <label key={i} className="flex items-center gap-2">
               <input
                 type="radio"
                 checked={newQuestion.answer === i}
@@ -228,9 +204,7 @@ export default function AdminPanel({ onLogout }) {
       {showLogoutConfirm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="card p-6 w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-2">
-              Confirm Logout
-            </h3>
+            <h3 className="text-lg font-semibold mb-2">Confirm Logout</h3>
 
             <p className="text-sm text-gray-600 mb-5">
               Are you sure you want to logout from admin panel?
@@ -244,10 +218,7 @@ export default function AdminPanel({ onLogout }) {
                 Cancel
               </button>
 
-              <button
-                onClick={onLogout}
-                className="btn-danger"
-              >
+              <button onClick={onLogout} className="btn-danger">
                 Logout
               </button>
             </div>

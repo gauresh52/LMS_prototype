@@ -109,7 +109,7 @@ main.jsx
 1. Clone the repository
 
   git clone https://github.com/gauresh52/LMS_prototype.git
-  cd lms-prototype
+  cd LMS_prototype
 
 2. Install dependencies
 

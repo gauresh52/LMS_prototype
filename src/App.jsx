@@ -36,7 +36,7 @@ export default function App() {
   /* ================= ADMIN DASHBOARD ================= */
   if (isAdmin) {
     return (
-      <div className="min-h-screen flex justify-center px-4 py-8 bg-gray-50">
+      <div className="min-h-screen flex justify-center px-4 py-8">
         <div className="w-full max-w-5xl fade-in">
           <AdminPanel onLogout={() => setIsAdmin(false)} />
         </div>
@@ -47,7 +47,7 @@ export default function App() {
   /* ================= ADMIN LOGIN ================= */
   if (showAdminLogin) {
     return (
-      <div className="min-h-screen flex justify-center items-start px-4 py-8 bg-gray-50">
+      <div className="min-h-screen flex justify-center items-start px-4 py-8">
         <div className="w-full max-w-md fade-in">
           <AdminLogin
             onSuccess={() => {
@@ -63,7 +63,7 @@ export default function App() {
 
   /* ================= USER VIEW ================= */
   return (
-    <div className="min-h-screen flex justify-center px-4 py-8 bg-gray-50">
+    <div className="min-h-screen flex justify-center px-4 py-8 ">
       <div className="w-full max-w-5xl fade-in">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">

@@ -30,6 +30,18 @@
 }
 
 /* Global defaults */
-html {
-  @apply bg-gray-50 text-gray-800;
+html,
+body {
+  @apply min-h-screen;
 }
+
+/* Subtle app background gradient */
+body {
+  background: linear-gradient(
+    180deg,
+    #c0c2ca 0%,
+    #cfd3fb 40%,
+    #7f7795 100%
+  );
+}
+

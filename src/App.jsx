@@ -7,7 +7,6 @@ import AdminPanel from "./components/AdminPanel";
 import AdminLogin from "./components/AdminLogin";
 import ProgressBar from "./components/ProgressBar";
 
-
 export default function App() {
   const [stage, setStage] = useState("pre");
   const [isAdmin, setIsAdmin] = useState(false);
@@ -64,20 +63,20 @@ export default function App() {
   // USER VIEW
   return (
     <div className="p-6 max-w-5xl mx-auto fade-in">
-      
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-xl font-semibold">Learning Module</h1>
-        
 
-
-        <button
-          onClick={() => setShowAdminLogin(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded transition"
-        >
-          Admin Login
-        </button>
+        {/* Admin login allowed ONLY before assessment starts */}
+        {stage === "pre" && (
+          <button
+            onClick={() => setShowAdminLogin(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded transition"
+          >
+            Admin Login
+          </button>
+        )}
       </div>
-      
+
       <ProgressBar currentStage={stage} />
 
       {stage === "pre" && <PreTest setStage={setStage} />}

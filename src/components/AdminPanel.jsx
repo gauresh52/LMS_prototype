@@ -24,19 +24,19 @@ export default function AdminPanel() {
   };
 
  
-  const save = () => {
-    saveQuestions(questions);
+    const save = () => {
+      saveQuestions(questions);
 
-    // Invalidate previous student attempts
-    localStorage.removeItem("preQuestions");
-    localStorage.removeItem("postQuestions");
-    localStorage.removeItem("preScore");
-    localStorage.removeItem("postScore");
-    localStorage.removeItem("videoCompleted");
-    localStorage.removeItem("stage");
+      // Invalidate previous student attempts
+      localStorage.removeItem("preQuestions");
+      localStorage.removeItem("postQuestions");
+      localStorage.removeItem("preScore");
+      localStorage.removeItem("postScore");
+      localStorage.removeItem("videoCompleted");
+      localStorage.removeItem("stage");
 
-    alert("Questions saved and student attempts reset.");
-  };
+      alert("Questions saved and student attempts reset.");
+    };
 
    
   return (

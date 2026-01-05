@@ -63,11 +63,7 @@ export default function VideoPlayer({ onEnd }) {
     setCurrentTime(current);
     setWarning("");
 
-    if (
-      duration > 0 &&
-      current >= duration - 0.3 &&
-      !completedRef.current
-    ) {
+    if (duration > 0 && current >= duration - 0.3 && !completedRef.current) {
       completedRef.current = true;
       localStorage.setItem("videoCompleted", "true");
       setCompleted(true);
@@ -89,8 +85,7 @@ export default function VideoPlayer({ onEnd }) {
     }
   };
 
-  const progressPercent =
-    duration > 0 ? (currentTime / duration) * 100 : 0;
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
     <div className="max-w-3xl mx-auto fade-in">
@@ -126,9 +121,7 @@ export default function VideoPlayer({ onEnd }) {
 
         {/* Warning */}
         {warning && (
-          <p className="text-sm text-red-600 mt-2 text-center">
-            {warning}
-          </p>
+          <p className="text-sm text-red-600 mt-2 text-center">{warning}</p>
         )}
 
         {/* Controls */}
@@ -144,16 +137,18 @@ export default function VideoPlayer({ onEnd }) {
               {playing ? "Pause" : "Replay"}
             </button>
           )}
-        </div>
+          
+          {/* Proceed */}
+          {completed && (
+            //<div className="flex justify-between mt-6">
+              <button onClick={onEnd} className="btn-primary">
+                Proceed to Post-Test
+              </button>
+            //</div>
+          )}
 
-        {/* Proceed */}
-        {completed && (
-          <div className="flex justify-center mt-6">
-            <button onClick={onEnd} className="btn-primary">
-              Proceed to Post-Test
-            </button>
-          </div>
-        )}
+        </div>
+        
       </div>
     </div>
   );

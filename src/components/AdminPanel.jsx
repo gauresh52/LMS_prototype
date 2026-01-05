@@ -5,20 +5,22 @@ const MAX_QUESTIONS = 15;
 
 export default function AdminPanel({ onLogout }) {
   const [questions, setQuestions] = useState(getQuestions());
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
   const [newQuestion, setNewQuestion] = useState({
     q: "",
     options: ["", "", ""],
     answer: 0,
   });
 
-  // Update existing question text
+  /*  CRUD LOGIC  */
+
   const updateQuestionText = (id, value) => {
     setQuestions((prev) =>
       prev.map((q) => (q.id === id ? { ...q, q: value } : q))
     );
   };
 
-  // Update existing option
   const updateOption = (qId, index, value) => {
     setQuestions((prev) =>
       prev.map((q) =>
@@ -34,22 +36,19 @@ export default function AdminPanel({ onLogout }) {
     );
   };
 
-  // Update correct answer
-  const updateAnswer = (qId, value) => {
+  const updateAnswer = (qId, index) => {
     setQuestions((prev) =>
       prev.map((q) =>
-        q.id === qId ? { ...q, answer: Number(value) } : q
+        q.id === qId ? { ...q, answer: index } : q
       )
     );
   };
 
-  // Delete question
   const deleteQuestion = (id) => {
     if (!window.confirm("Delete this question?")) return;
     setQuestions((prev) => prev.filter((q) => q.id !== id));
   };
 
-  // Add new question
   const addQuestion = () => {
     if (questions.length >= MAX_QUESTIONS) return;
 
@@ -57,7 +56,7 @@ export default function AdminPanel({ onLogout }) {
       !newQuestion.q ||
       newQuestion.options.some((o) => o.trim() === "")
     ) {
-      alert("Please fill all fields for the new question.");
+      alert("Please fill all fields.");
       return;
     }
 
@@ -76,12 +75,13 @@ export default function AdminPanel({ onLogout }) {
     });
   };
 
-  // Save changes (DO NOT TOUCH student attempts)
   const save = () => {
     saveQuestions(questions);
     localStorage.setItem("questionsVersion", Date.now().toString());
     alert("Questions saved successfully.");
   };
+
+  /*  ADMIN VIEW  */
 
   return (
     <div className="bg-white p-6 rounded shadow max-w-5xl mx-auto fade-in">
@@ -100,7 +100,7 @@ export default function AdminPanel({ onLogout }) {
           </button>
 
           <button
-            onClick={onLogout}
+            onClick={() => setShowLogoutConfirm(true)}
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded"
           >
             Logout
@@ -110,10 +110,7 @@ export default function AdminPanel({ onLogout }) {
 
       {/* Existing Questions */}
       {questions.map((q) => (
-        <div
-          key={q.id}
-          className="border rounded p-4 mb-4"
-        >
+        <div key={q.id} className="border rounded p-4 mb-4">
           <div className="flex justify-between items-start mb-2">
             <input
               value={q.q}
@@ -184,7 +181,10 @@ export default function AdminPanel({ onLogout }) {
               onChange={(e) => {
                 const opts = [...newQuestion.options];
                 opts[i] = e.target.value;
-                setNewQuestion({ ...newQuestion, options: opts });
+                setNewQuestion({
+                  ...newQuestion,
+                  options: opts,
+                });
               }}
               className="w-full border rounded p-1"
               disabled={questions.length >= MAX_QUESTIONS}
@@ -195,13 +195,11 @@ export default function AdminPanel({ onLogout }) {
         <button
           onClick={addQuestion}
           disabled={questions.length >= MAX_QUESTIONS}
-          className={`mt-3 px-4 py-1.5 rounded text-white
-            ${
-              questions.length >= MAX_QUESTIONS
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-600 hover:bg-green-700"
-            }
-          `}
+          className={`mt-3 px-4 py-1.5 rounded text-white ${
+            questions.length >= MAX_QUESTIONS
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-600 hover:bg-green-700"
+          }`}
         >
           Add Question
         </button>
@@ -212,6 +210,37 @@ export default function AdminPanel({ onLogout }) {
           </p>
         )}
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow max-w-sm w-full">
+            <h3 className="text-lg font-semibold mb-3">
+              Confirm Logout
+            </h3>
+
+            <p className="text-sm mb-5">
+              Are you sure you want to logout from admin panel?
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-4 py-1.5 border rounded"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={onLogout}
+                className="px-4 py-1.5 bg-red-600 text-white rounded"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

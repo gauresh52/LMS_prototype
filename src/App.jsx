@@ -12,7 +12,7 @@ export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminLogin, setShowAdminLogin] = useState(false);
 
-  // Safe reload handling
+  //  Safe reload handling
   useEffect(() => {
     const savedStage = localStorage.getItem("stage");
     const validStages = ["pre", "video", "post", "score"];
@@ -25,15 +25,21 @@ export default function App() {
     }
   }, []);
 
-  // ADMIN DASHBOARD
-if (isAdmin) {
-  return (
-    <div className="p-6 max-w-5xl mx-auto fade-in">
-      <AdminPanel onLogout={() => setIsAdmin(false)} />
-    </div>
-  );
-}
+  //  HARD GUARD: close admin login if assessment starts
+  useEffect(() => {
+    if (stage !== "pre" && showAdminLogin) {
+      setShowAdminLogin(false);
+    }
+  }, [stage, showAdminLogin]);
 
+  // ADMIN DASHBOARD
+  if (isAdmin) {
+    return (
+      <div className="p-6 max-w-5xl mx-auto fade-in">
+        <AdminPanel onLogout={() => setIsAdmin(false)} />
+      </div>
+    );
+  }
 
   // ADMIN LOGIN SCREEN
   if (showAdminLogin) {
@@ -50,7 +56,7 @@ if (isAdmin) {
     );
   }
 
-  // USER VIEW
+  //  USER VIEW
   return (
     <div className="p-6 max-w-5xl mx-auto fade-in">
       <div className="flex justify-between items-center mb-6">
@@ -59,7 +65,9 @@ if (isAdmin) {
         {/* Admin login allowed ONLY before assessment starts */}
         {stage === "pre" && (
           <button
-            onClick={() => setShowAdminLogin(true)}
+            onClick={() => {
+              setShowAdminLogin(true);
+            }}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded transition"
           >
             Admin Login
@@ -74,7 +82,6 @@ if (isAdmin) {
       {stage === "video" && (
         <VideoPlayer
           onEnd={() => {
-            localStorage.setItem("videoCompleted", "true");
             localStorage.setItem("stage", "post");
             setStage("post");
           }}

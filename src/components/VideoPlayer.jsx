@@ -37,7 +37,7 @@ export default function VideoPlayer({ onEnd }) {
   const replayToggle = () => {
     if (!videoRef.current) return;
 
-    if (videoRef.current.currentTime >= duration) {
+    if (completed && videoRef.current.currentTime >= duration) {
       videoRef.current.currentTime = 0;
       lastTimeRef.current = 0;
       videoRef.current.play();
@@ -48,13 +48,11 @@ export default function VideoPlayer({ onEnd }) {
     togglePlay();
   };
 
-  // Time update (skip prevention + completion detection)
   const updateTime = () => {
     if (!videoRef.current) return;
 
     const current = videoRef.current.currentTime;
 
-    // Skip prevention
     if (current - lastTimeRef.current > 1.5) {
       videoRef.current.currentTime = lastTimeRef.current;
       setWarning("Skipping is disabled. Please watch the video completely.");
@@ -65,15 +63,11 @@ export default function VideoPlayer({ onEnd }) {
     setCurrentTime(current);
     setWarning("");
 
-    // Completion detection (iOS-safe)
-    if (duration > 0 && current >= duration - 0.3) {
-      setPlaying(false); // 🔑 ALWAYS reset UI
-
-      if (!completedRef.current) {
-        completedRef.current = true;
-        localStorage.setItem("videoCompleted", "true");
-        setCompleted(true);
-      }
+    if (duration > 0 && current >= duration - 0.3 && !completedRef.current) {
+      completedRef.current = true;
+      localStorage.setItem("videoCompleted", "true");
+      setCompleted(true);
+      setPlaying(false);
     }
   };
 
@@ -82,27 +76,25 @@ export default function VideoPlayer({ onEnd }) {
     setDuration(videoRef.current.duration);
   };
 
-  // Desktop completion fallback
   const handleEnded = () => {
-    setPlaying(false); // 🔑 ALWAYS reset UI
-
     if (!completedRef.current) {
       completedRef.current = true;
       localStorage.setItem("videoCompleted", "true");
       setCompleted(true);
+      setPlaying(false);
     }
   };
 
-  const progressPercent =
-    duration > 0 ? (currentTime / duration) * 100 : 0;
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
     <div className="max-w-3xl mx-auto fade-in">
       <div className="card p-5">
+        {/* Video */}
         <video
           ref={videoRef}
-          src="https://www.w3schools.com/html/mov_bbb.mp4"
-          className="w-full rounded-md mb-4"
+          src="sampleVideo.mp4"
+          className="w-full max-h-[70vh] sm:max-h-[55vh] object-contain mb-4"
           playsInline
           webkit-playsinline="true"
           controls={false}
@@ -121,6 +113,7 @@ export default function VideoPlayer({ onEnd }) {
               style={{ width: `${progressPercent}%` }}
             />
           </div>
+
           <div className="flex justify-end text-xs text-gray-600 font-mono mt-1">
             {formatTime(currentTime)} / {formatTime(duration)}
           </div>
@@ -128,9 +121,7 @@ export default function VideoPlayer({ onEnd }) {
 
         {/* Warning */}
         {warning && (
-          <p className="text-sm text-red-600 mt-2 text-center">
-            {warning}
-          </p>
+          <p className="text-sm text-red-600 mt-2 text-center">{warning}</p>
         )}
 
         {/* Controls */}
@@ -146,13 +137,18 @@ export default function VideoPlayer({ onEnd }) {
               {playing ? "Pause" : "Replay"}
             </button>
           )}
-
+          
+          {/* Proceed */}
           {completed && (
-            <button onClick={onEnd} className="btn-primary">
-              Proceed to Post-Test
-            </button>
+            //<div className="flex justify-between mt-6">
+              <button onClick={onEnd} className="btn-primary">
+                Proceed to Post-Test
+              </button>
+            //</div>
           )}
+
         </div>
+        
       </div>
     </div>
   );

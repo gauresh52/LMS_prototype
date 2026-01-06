@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const ADMIN_USERNAME = "Admin";
-const ADMIN_PASSWORD = "Admin@123";
+const ADMIN_PASSWORD = "Admin@567";
 
 export default function AdminLogin({ onSuccess, onCancel }) {
   const [username, setUsername] = useState("");
@@ -50,6 +50,8 @@ export default function AdminLogin({ onSuccess, onCancel }) {
           <p className="text-red-600 text-sm">{error}</p>
         )}
 
+        <h6 className="text-x font-semibold mb-4">Admin seeded as Username:"Admin" & Pass:"Admin@567".</h6>
+
         <div className="flex justify-end gap-2">
           <button
             type="button"
@@ -68,8 +70,7 @@ export default function AdminLogin({ onSuccess, onCancel }) {
 
         </div>
       </form>
-        <h6 className="text-xl font-semibold mb-4">Admin seeded Username:"Admin" & Pass:"Admin@123".</h6>
-
+       
     </div>
     
   );

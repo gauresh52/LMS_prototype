@@ -2,6 +2,8 @@ import { useState } from "react";
 import { getQuestions, saveQuestions } from "../data/questions";
 
 const MAX_QUESTIONS = 15;
+const MIN_QUESTIONS = 6;
+
 
 export default function AdminPanel({ onLogout }) {
   const [questions, setQuestions] = useState(getQuestions());
@@ -39,11 +41,17 @@ export default function AdminPanel({ onLogout }) {
       prev.map((q) => (q.id === qId ? { ...q, answer: index } : q))
     );
   };
+const deleteQuestion = (id) => {
+  if (questions.length <= MIN_QUESTIONS) {
+    alert(`You must keep at least ${MIN_QUESTIONS} questions.`);
+    return;
+  }
 
-  const deleteQuestion = (id) => {
-    if (!window.confirm("Delete this question?")) return;
-    setQuestions((prev) => prev.filter((q) => q.id !== id));
-  };
+  if (!window.confirm("Delete this question?")) return;
+
+  setQuestions((prev) => prev.filter((q) => q.id !== id));
+};
+
 
   const addQuestion = () => {
     if (questions.length >= MAX_QUESTIONS) return;

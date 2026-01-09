@@ -26,7 +26,7 @@ export default function App() {
     }
   }, []);
 
-  //  HARD GUARD: close admin login if assessment starts
+  //  close admin login if tesst starts
   useEffect(() => {
     if (stage !== "pre" && showAdminLogin) {
       setShowAdminLogin(false);
